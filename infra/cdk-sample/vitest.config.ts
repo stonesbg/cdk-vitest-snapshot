@@ -11,6 +11,5 @@ export default defineConfig({
       inline: ["vitest-mock-process"],
     },
     setupFiles: "./test/setup.ts",
-    threads: false,
   },
 });

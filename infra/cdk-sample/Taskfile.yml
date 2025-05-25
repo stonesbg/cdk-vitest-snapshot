@@ -1,0 +1,114 @@
+version: "3"
+
+vars:
+  APP_NAME: my-cdk-app
+  NODE_VERSION: 18
+
+env:
+  NODE_ENV: development
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+
+  install:
+    desc: Install pnpm dependencies
+    cmds:
+      - pnpm install
+    sources:
+      - package.json
+      - package-lock.json
+    generates:
+      - node_modules/**/*
+
+  build:
+    desc: Compile TypeScript code
+    deps: [install]
+    cmds:
+      - pnpm run build --build --clean
+    sources:
+      - "**/*.ts"
+      - tsconfig.json
+    generates:
+      - "lib/**/*.js"
+      - "lib/**/*.d.ts"
+
+  watch:
+    desc: Watch TypeScript files for changes and rebuild
+    deps: [install]
+    cmds:
+      - pnpm run watch
+
+  test:
+    desc: Run tests with jest
+    deps: [install]
+    cmds:
+      - pnpm test
+    sources:
+      - "**/*.test.ts"
+      - "**/*.spec.ts"
+      - "test/**/*.ts"
+
+  lint:
+    desc: Lint TypeScript code
+    deps: [install]
+    cmds:
+      - pnpm run lint
+    sources:
+      - "**/*.ts"
+
+  lint:fix:
+    desc: Fix linting issues automatically
+    deps: [install]
+    cmds:
+      - pnpm run lint -- --fix
+
+  synth:
+    desc: Synthesize CDK app
+    deps: [build]
+    cmds:
+      - pnpm cdk synth
+    generates:
+      - cdk.out/**/*
+
+  diff:
+    desc: Show differences between deployed stack and current state
+    deps: [build]
+    cmds:
+      - pnpm cdk diff
+
+  deploy:
+    desc: Deploy CDK stack
+    deps: [build, test]
+    cmds:
+      - pnpm cdk deploy --require-approval never
+    preconditions:
+      - sh: "[ -f cdk.json ]"
+        msg: "cdk.json not found. Make sure you're in a CDK project directory."
+
+  deploy:dev:
+    desc: Deploy to development environment
+    deps: [build, test]
+    env:
+      CDK_ENV: dev
+    cmds:
+      - pnpm cdk deploy --require-approval never --context env=dev
+
+  deploy:prod:
+    desc: Deploy to production environment
+    deps: [build, test]
+    env:
+      CDK_ENV: prod
+    cmds:
+      - pnpm cdk deploy --require-approval never --context env=prod
+    preconditions:
+      - sh: "git diff --quiet"
+        msg: "Working directory is not clean. Commit your changes before deploying to production."
+
+  destroy:
+    desc: Destroy CDK stack
+    deps: [build]
+    cmds:
+      - pnpm cdk destroy

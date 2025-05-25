@@ -18,7 +18,16 @@ export class InfraStack extends cdk.Stack {
     });
 
     const fn = new lambda.Function(this, "MyFunction", {
-      code: lambda.Code.fromAsset("../apps/lambda-handler"),
+      code: lambda.Code.fromAsset("../../apps/lambda-handler"),
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: "index.handler",
+    });
+
+    const fn2 = new lambda.Function(this, "from-bucket", {
+      code: lambda.Code.fromBucket(
+        cdk.aws_s3.Bucket.fromBucketName(this, "MyBucket", "saved-assets"),
+        "assets/lambda-handler.zip",
+      ),
       runtime: lambda.Runtime.NODEJS_LATEST,
       handler: "index.handler",
     });

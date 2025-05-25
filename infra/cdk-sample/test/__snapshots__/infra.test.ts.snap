@@ -489,6 +489,54 @@ exports[`CDK Sample App Stack 1`] = `
       "Type": "AWS::S3::Bucket",
       "UpdateReplacePolicy": "Retain",
     },
+    "frombucket42B2B247": {
+      "DependsOn": [
+        "frombucketServiceRole4D28DBC6",
+      ],
+      "Properties": {
+        "Code": "[CODE REMOVED]",
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "frombucketServiceRole4D28DBC6",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs18.x",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "frombucketServiceRole4D28DBC6": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
   },
   "Rules": {
     "CheckBootstrapVersion": {

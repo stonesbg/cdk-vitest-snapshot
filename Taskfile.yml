@@ -1,0 +1,12 @@
+version: "3"
+
+includes:
+  lambda-handler:
+    taskfile: apps/lambda-handler/Taskfile.yml
+    dir: apps/lambda-handler
+  py-helloworld:
+    taskfile: apps/helloworld/Taskfile.yml
+    dir: apps/helloworld
+  sample:
+    taskfile: infra/cdk-sample/Taskfile.yml
+    dir: infra/cdk-sample
